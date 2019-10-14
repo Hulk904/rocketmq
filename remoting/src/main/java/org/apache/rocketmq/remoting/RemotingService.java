@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.remoting;
 
+/**
+ *  rockermq的通信相关代码
+ */
 public interface RemotingService {
     void start();
 

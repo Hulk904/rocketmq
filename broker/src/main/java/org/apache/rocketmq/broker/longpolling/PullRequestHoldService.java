@@ -66,6 +66,10 @@ public class PullRequestHoldService extends ServiceThread {
     @Override
     public void run() {
         log.info("{} service started", this.getServiceName());
+        /*
+        长轮询的机制
+        服务端接到新消息请求后，如果队列里没有新消息，并不急于返回，通过一个循环不断查看状态
+         */
         while (!this.isStopped()) {
             try {
                 if (this.brokerController.getBrokerConfig().isLongPollingEnable()) {
@@ -75,7 +79,7 @@ public class PullRequestHoldService extends ServiceThread {
                 }
 
                 long beginLockTimestamp = this.systemClock.now();
-                this.checkHoldRequest();
+                this.checkHoldRequest();//名字以check开头，其实里面还有发送的逻辑
                 long costTime = this.systemClock.now() - beginLockTimestamp;
                 if (costTime > 5 * 1000) {
                     log.info("[NOTIFYME] check hold request cost {} ms.", costTime);
@@ -100,7 +104,7 @@ public class PullRequestHoldService extends ServiceThread {
                 String topic = kArray[0];
                 int queueId = Integer.parseInt(kArray[1]);
                 final long offset = this.brokerController.getMessageStore().getMaxOffsetInQueue(topic, queueId);
-                try {
+                try {//如果有消息了会发送
                     this.notifyMessageArriving(topic, queueId, offset);
                 } catch (Throwable e) {
                     log.error("check hold request failed. topic={}, queueId={}", topic, queueId, e);

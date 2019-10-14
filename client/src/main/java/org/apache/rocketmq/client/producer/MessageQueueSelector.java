@@ -20,6 +20,10 @@ import java.util.List;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 
+/**
+ * 可用来设置将消息发送到特定的messagequeue
+ * 实现部分顺序消息（比如对同一个订单相关的消息）
+ */
 public interface MessageQueueSelector {
     MessageQueue select(final List<MessageQueue> mqs, final Message msg, final Object arg);
 }

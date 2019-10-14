@@ -61,6 +61,9 @@ public class FileWatchService extends ServiceThread {
         return "FileWatchService";
     }
 
+    /**
+     * 通过文件的hash值判断文件是否有改变
+     */
     @Override
     public void run() {
         log.info(this.getServiceName() + " service started");

@@ -25,6 +25,7 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 
 /**
  * Offset store interface
+ * offset是指某个topic下的一条消息在某个message quequ里的位置
  */
 public interface OffsetStore {
     /**

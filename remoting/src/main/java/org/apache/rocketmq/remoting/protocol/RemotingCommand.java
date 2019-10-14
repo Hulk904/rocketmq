@@ -141,6 +141,11 @@ public class RemotingCommand {
         return decode(byteBuffer);
     }
 
+    /**
+     * 消息解码过程
+     * @param byteBuffer
+     * @return
+     */
     public static RemotingCommand decode(final ByteBuffer byteBuffer) {
         int length = byteBuffer.limit();
         int oriHeaderLen = byteBuffer.getInt();
@@ -151,7 +156,7 @@ public class RemotingCommand {
 
         RemotingCommand cmd = headerDecode(headerData, getProtocolType(oriHeaderLen));
 
-        int bodyLength = length - 4 - headerLength;
+        int bodyLength = length - 4 - headerLength;//header length占4字节
         byte[] bodyData = null;
         if (bodyLength > 0) {
             bodyData = new byte[bodyLength];
@@ -325,6 +330,10 @@ public class RemotingCommand {
         return name;
     }
 
+    /**
+     * 消息编码逻辑
+     * @return
+     */
     public ByteBuffer encode() {
         // 1> header length size
         int length = 4;

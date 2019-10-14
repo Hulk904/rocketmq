@@ -13,6 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * rocketq消息封装类
  */
 package org.apache.rocketmq.common.message;
 
@@ -27,6 +29,13 @@ public class Message implements Serializable {
 
     private String topic;
     private int flag;
+    /**
+     * 扩展属性
+     * tag：消息tag，用于消息过滤
+     * keys：message索引键，多个用空格隔开，rocketmq可以根据这些key快速检索到消息
+     * waitStoreMsgOK：消息发送时是否等消息存储完成后再返回
+     * delayTimeLevel 消息延迟级别，用于定时消息或消息重试
+     */
     private Map<String, String> properties;
     private byte[] body;
     private String transactionId;

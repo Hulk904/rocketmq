@@ -35,7 +35,10 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.body.ProcessQueueInfo;
 
 /**
+ * 从broker获取到的消息提交到线程池里并行执行，很难监控和控制执行状态
+ * 所以定义了一个快照类来解决这些问题（获得当前消息堆积的数量，如何解决处理超时情况）
  * Queue consumption snapshot
+ *
  */
 public class ProcessQueue {
     public final static long REBALANCE_LOCK_MAX_LIVE_TIME =

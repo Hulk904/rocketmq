@@ -18,6 +18,10 @@ package org.apache.rocketmq.common.message;
 
 import java.io.Serializable;
 
+/**
+ * 为了并发，所以一个topic对应多个messagequeue，当然也可以设置了。。。
+ */
+
 public class MessageQueue implements Comparable<MessageQueue>, Serializable {
     private static final long serialVersionUID = 6191200464116433425L;
     private String topic;

@@ -41,6 +41,11 @@ import org.apache.rocketmq.srvutil.ServerUtil;
 import org.apache.rocketmq.srvutil.ShutdownHookThread;
 import org.slf4j.LoggerFactory;
 
+/**
+ * nameserver可以部署多个，相互之间独立，其他角色同时向多个nameserver机器上报状态信息，从而达到热备份的目的
+ * nameserver本身是无状态的，也就是说nameserver中的broker，topic等状态信息不会持久存储，都是由各个角色定时上报并存储到内存中的
+ * 所以nameserver不像zookeeper那样复杂，也没有主从，即数据同步的问题
+ */
 public class NamesrvStartup {
 
     private static InternalLogger log;
@@ -80,9 +85,13 @@ public class NamesrvStartup {
         }
 
         final NamesrvConfig namesrvConfig = new NamesrvConfig();
-        namesrvConfig.setRocketmqHome("/Users/ledongli/IdeaProjects/rocketmq/distribution");
+        namesrvConfig.setRocketmqHome("/Users/yangyuan/IdeaProjects/rocketmq/distribution");
         final NettyServerConfig nettyServerConfig = new NettyServerConfig();
         nettyServerConfig.setListenPort(9876);
+        /*
+        解析命令参数
+        c 用来指定配置文件的位置
+         */
         if (commandLine.hasOption('c')) {
             String file = commandLine.getOptionValue('c');
             if (file != null) {
@@ -98,7 +107,7 @@ public class NamesrvStartup {
                 in.close();
             }
         }
-
+        //p用来打印所有配置项的值, 打印配置项之后程序就退出了，这是一个帮助调试的选项
         if (commandLine.hasOption('p')) {
             MixAll.printObjectProperties(null, namesrvConfig);
             MixAll.printObjectProperties(null, nettyServerConfig);
@@ -123,7 +132,7 @@ public class NamesrvStartup {
         MixAll.printObjectProperties(log, namesrvConfig);
         MixAll.printObjectProperties(log, nettyServerConfig);
 
-        final NamesrvController controller = new NamesrvController(namesrvConfig, nettyServerConfig);
+        final NamesrvController controller = new NamesrvController(namesrvConfig, nettyServerConfig);//controller 为nameserver核心控制器
 
         // remember all configs to prevent discard
         controller.getConfiguration().registerConfig(properties);
@@ -136,13 +145,16 @@ public class NamesrvStartup {
         if (null == controller) {
             throw new IllegalArgumentException("NamesrvController is null");
         }
-
+        //初始化controller
         boolean initResult = controller.initialize();
         if (!initResult) {
             controller.shutdown();
             System.exit(-3);
         }
-
+        /*
+        注册shutdownhookthread，当程序推出的时候会调用controller.shutdown来做推出前的清理工作
+        注册jvm钩子函数并启动服务器，以便监听broker，消息生产者的网络请求
+         */
         Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(log, new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -151,7 +163,7 @@ public class NamesrvStartup {
             }
         }));
 
-        controller.start();
+        controller.start();//nameserver开始服务
 
         return controller;
     }

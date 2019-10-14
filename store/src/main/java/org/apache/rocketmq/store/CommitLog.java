@@ -41,6 +41,8 @@ import org.apache.rocketmq.store.schedule.ScheduleMessageService;
 
 /**
  * Store all metadata downtime for recovery, data protection reliability
+ * 消息真正的物理存储文件就是commitlog
+ * 每台broker上的commitlog被本机器所有consumequeue共享
  */
 public class CommitLog {
     // Message's MAGIC CODE daa320a7
@@ -655,6 +657,12 @@ public class CommitLog {
         }
     }
 
+    /**
+     * broker  sync_master下的消息同步
+     * @param result
+     * @param putMessageResult
+     * @param messageExt
+     */
     public void handleHA(AppendMessageResult result, PutMessageResult putMessageResult, MessageExt messageExt) {
         if (BrokerRole.SYNC_MASTER == this.defaultMessageStore.getMessageStoreConfig().getBrokerRole()) {
             HAService service = this.defaultMessageStore.getHaService();

@@ -212,6 +212,13 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
         return false;
     }
 
+    /**
+     * broker接到创建topic的请求后，执行具体的创建逻辑
+     * @param ctx
+     * @param request
+     * @return
+     * @throws RemotingCommandException
+     */
     private synchronized RemotingCommand updateAndCreateTopic(ChannelHandlerContext ctx,
         RemotingCommand request) throws RemotingCommandException {
         final RemotingCommand response = RemotingCommand.createResponseCommand(null);
@@ -243,9 +250,9 @@ public class AdminBrokerProcessor implements NettyRequestProcessor {
         topicConfig.setTopicFilterType(requestHeader.getTopicFilterTypeEnum());
         topicConfig.setPerm(requestHeader.getPerm());
         topicConfig.setTopicSysFlag(requestHeader.getTopicSysFlag() == null ? 0 : requestHeader.getTopicSysFlag());
-
+        //更新本地的topicconfig
         this.brokerController.getTopicConfigManager().updateTopicConfig(topicConfig);
-
+        //向nameserver发送registerbroker请求
         this.brokerController.registerIncrementBrokerData(topicConfig,this.brokerController.getTopicConfigManager().getDataVersion());
 
         return null;

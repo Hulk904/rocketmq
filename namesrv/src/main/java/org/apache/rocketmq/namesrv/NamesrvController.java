@@ -79,11 +79,16 @@ public class NamesrvController {
 
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
 
-        this.remotingExecutor =
+        this.remotingExecutor =/*负责通信的服务*/
             Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
 
         this.registerProcessor();
-
+        /**
+         * 两个定时执行的线程
+         */
+        /*
+         nameserver定时检查。时间戳长时间没有更新后，便会触发清理逻辑（扫描失败的broker）、移除处于不激活状态的broker
+         **/
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
@@ -91,19 +96,22 @@ public class NamesrvController {
                 NamesrvController.this.routeInfoManager.scanNotActiveBroker();
             }
         }, 5, 10, TimeUnit.SECONDS);
-
+        /*
+        打印配置信息
+        nameserver每隔十分钟打印一次kv配置
+         */
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 
             @Override
             public void run() {
                 NamesrvController.this.kvConfigManager.printAllPeriodically();
             }
-        }, 1, 10, TimeUnit.MINUTES);
+        }, 1, 10, TimeUnit.MINUTES);//固定频率调用
 
         if (TlsSystemConfig.tlsMode != TlsMode.DISABLED) {
             // Register a listener to reload SslContext
             try {
-                fileWatchService = new FileWatchService(
+                fileWatchService = new FileWatchService(//监听这几个文件的变化
                     new String[] {
                         TlsSystemConfig.tlsServerCertPath,
                         TlsSystemConfig.tlsServerKeyPath,
@@ -141,6 +149,10 @@ public class NamesrvController {
         return true;
     }
 
+    /*
+    关联初始化的线程池
+    用什么线程池处理什么任务
+     */
     private void registerProcessor() {
         if (namesrvConfig.isClusterTest()) {
 

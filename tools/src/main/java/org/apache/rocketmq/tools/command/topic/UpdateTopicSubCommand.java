@@ -29,6 +29,9 @@ import org.apache.rocketmq.tools.command.CommandUtil;
 import org.apache.rocketmq.tools.command.SubCommand;
 import org.apache.rocketmq.tools.command.SubCommandException;
 
+/**
+ * 创建topic的代码
+ */
 public class UpdateTopicSubCommand implements SubCommand {
 
     @Override

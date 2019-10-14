@@ -48,6 +48,7 @@ public class Producer {
         /*
          * Launch the instance.
          */
+        producer.setNamesrvAddr("127.0.0.1:9876");
         producer.start();
 
         for (int i = 0; i < 1000; i++) {
@@ -67,6 +68,9 @@ public class Producer {
                 SendResult sendResult = producer.send(msg);
 
                 System.out.printf("%s%n", sendResult);
+
+                Thread.sleep(1000);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Thread.sleep(1000);

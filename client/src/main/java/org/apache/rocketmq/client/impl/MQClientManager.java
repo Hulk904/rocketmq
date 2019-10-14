@@ -40,6 +40,11 @@ public class MQClientManager {
         return instance;
     }
 
+    /**
+     * 并不是一个单例模式，有些情况需要创建多个实例（比如需要连接两个rocketmq集群）
+     * @param clientConfig
+     * @return
+     */
     public MQClientInstance getAndCreateMQClientInstance(final ClientConfig clientConfig) {
         return getAndCreateMQClientInstance(clientConfig, null);
     }

@@ -24,6 +24,10 @@ import org.apache.rocketmq.logging.InternalLogger;
 import org.apache.rocketmq.logging.InternalLoggerFactory;
 import org.apache.rocketmq.store.config.StorePathConfigHelper;
 
+/**
+ * 和commitlog配合完成消息的存储,consumequeue是消息的逻辑队列，类似数据库的索引文件，存储的是物理存储的地址
+ * consumequeue的内容也会被写到磁盘做持久存储
+ */
 public class ConsumeQueue {
     private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 

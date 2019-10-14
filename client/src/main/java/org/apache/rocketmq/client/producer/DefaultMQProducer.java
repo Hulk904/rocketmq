@@ -53,6 +53,7 @@ import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
  * <strong>Thread Safety:</strong> After configuring and starting process, this class can be regarded as thread-safe
  * and used among multiple threads context.
  * </p>
+ * 消息发送者
  */
 public class DefaultMQProducer extends ClientConfig implements MQProducer {
 
